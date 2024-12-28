@@ -46,7 +46,7 @@ export default function CameraScreen() {
     } else {
       takePicture();
     }
-  }
+  };
 
   const takePicture = async () => {
     const res = await camera.current?.takePictureAsync();
@@ -70,6 +70,7 @@ export default function CameraScreen() {
     });
 
     setPicture(undefined);
+    setVideo(undefined);
     router.back();
   };
 
@@ -77,20 +78,33 @@ export default function CameraScreen() {
     return <ActivityIndicator />;
   }
 
-  if (picture) {
+  if (picture || video) {
     return (
       <View style={{ flex: 1 }}>
-        <Image
-          source={{ uri: picture.uri }}
-          style={{ width: "100%", flex: 1 }}
-        />
+        {picture && (
+          <Image
+            source={{ uri: picture.uri }}
+            style={{ width: "100%", flex: 1 }}
+          />
+        )}
+        {video && (
+          <Video
+            source={{ uri: video }}
+            shouldPlay
+            isLooping
+            style={{ width: "100%", flex: 1 }}
+          />
+        )}
         <View style={{ padding: 10 }}>
           <SafeAreaView edges={["bottom"]}>
-            <Button title="Save" onPress={() => saveFile(picture.uri)} />
+            <Button title="Save" onPress={() => saveFile(picture?.uri||video)} />
           </SafeAreaView>
         </View>
         <MaterialIcons
-          onPress={() => setPicture(undefined)}
+          onPress={() => {
+            setPicture(undefined);
+            setVideo(undefined);
+          }}
           name="close"
           color={"white"}
           style={{ position: "absolute", top: 30, left: 30 }}
